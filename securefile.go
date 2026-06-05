@@ -7,6 +7,7 @@ import (
 	"crypto/rand"
 	"crypto/sha1"
 	"encoding/hex"
+	"fmt"
 	"io"
 	"os"
 
@@ -22,7 +23,6 @@ func Encrypt(source string, password []byte) (bool, error) {
 
 	// read file
 	plaintext, err := os.ReadFile(source)
-
 	if err != nil {
 		return false, err
 	}
@@ -72,6 +72,7 @@ func Encrypt(source string, password []byte) (bool, error) {
 
 // Decrypt decrypts a file using AES-GCM.
 func Decrypt(source string, password []byte) (bool, error) {
+	saltSize := 12
 	// get file information, we need to know if file exists
 	if _, err := os.Stat(source); os.IsNotExist(err) {
 		return false, err
@@ -79,9 +80,14 @@ func Decrypt(source string, password []byte) (bool, error) {
 
 	// read file
 	ciphertext, err := os.ReadFile(source)
-
 	if err != nil {
 		return false, err
+	}
+
+	ciphertextSize := len(ciphertext)
+
+	if ciphertextSize < saltSize {
+		return false, fmt.Errorf("cipherText len: %d instead of %d", ciphertextSize, saltSize)
 	}
 
 	// generate salt
@@ -91,7 +97,6 @@ func Decrypt(source string, password []byte) (bool, error) {
 
 	// get decoded string
 	nonce, err := hex.DecodeString(str)
-
 	if err != nil {
 		return false, err
 	}

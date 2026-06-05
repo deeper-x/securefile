@@ -1,8 +1,8 @@
 package securefile
 
 import (
-	"io/ioutil"
 	"log"
+	"os"
 	"testing"
 
 	"github.com/h2non/filetype"
@@ -53,7 +53,7 @@ func TestMultipleDecEnc(t *testing.T) {
 }
 
 func checkFileType(inFile string) (string, error) {
-	buf, err := ioutil.ReadFile("./assets/sample.pdf")
+	buf, err := os.ReadFile(inFile)
 	res := "Unknown"
 
 	if err != nil {
