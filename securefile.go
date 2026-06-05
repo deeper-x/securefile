@@ -92,7 +92,7 @@ func Decrypt(source string, password []byte) (bool, error) {
 
 	// generate salt
 	key := password
-	salt := ciphertext[len(ciphertext)-12:]
+	salt := ciphertext[len(ciphertext)-saltSize:]
 	str := hex.EncodeToString(salt)
 
 	// get decoded string

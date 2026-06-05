@@ -54,7 +54,7 @@ func TestMultipleDecEnc(t *testing.T) {
 
 func checkFileType(inFile string) (string, error) {
 	buf, err := os.ReadFile(inFile)
-	res := "Unknown"
+	res := "Unknown/Encrypted"
 
 	if err != nil {
 		return "", err
