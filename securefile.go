@@ -72,7 +72,6 @@ func Encrypt(source string, password []byte) (bool, error) {
 
 // Decrypt decrypts a file using AES-GCM.
 func Decrypt(source string, password []byte) (bool, error) {
-	saltSize := 12
 	// get file information, we need to know if file exists
 	if _, err := os.Stat(source); os.IsNotExist(err) {
 		return false, err
@@ -85,6 +84,7 @@ func Decrypt(source string, password []byte) (bool, error) {
 	}
 
 	ciphertextSize := len(ciphertext)
+	saltSize := 12
 
 	if ciphertextSize < saltSize {
 		return false, fmt.Errorf("cipherText len: %d instead of %d", ciphertextSize, saltSize)
@@ -92,7 +92,7 @@ func Decrypt(source string, password []byte) (bool, error) {
 
 	// generate salt
 	key := password
-	salt := ciphertext[len(ciphertext)-saltSize:]
+	salt := ciphertext[ciphertextSize-saltSize:]
 	str := hex.EncodeToString(salt)
 
 	// get decoded string
@@ -117,7 +117,7 @@ func Decrypt(source string, password []byte) (bool, error) {
 	}
 
 	// generate plaintext
-	plaintext, err := aesgcm.Open(nil, nonce, ciphertext[:len(ciphertext)-12], nil)
+	plaintext, err := aesgcm.Open(nil, nonce, ciphertext[:ciphertextSize-saltSize], nil)
 	if err != nil {
 		return false, err
 	}
